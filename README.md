@@ -29,4 +29,44 @@ In the commands above, two parameters are very important:
 2) ```-p host-port:8080``` From container perspective, Marvin listens on port 8080. With this parameter, the port mapping is defined and the Marvin is accessible on port ```host-port```
 
 ### Basic usage   
+Let's say that Marvin is started using the command:
+```
+docker run -d -v /scripts:/opt -p 8080:8080 stupar/marvin
+```
+It means that scripts used by Marvin is located inside ```/scripts``` directory. No we want to add a new script there, and then execute it as a slack command. We will create the script for getting the logs from [Cloud Foundry](https://www.cloudfoundry.org/). 
+``` bash
+cd /scripts 	# navigate to the scripts folder
+curl -L "https://packages.cloudfoundry.org/stable?release=linux64-binary&source=github" | tar -zx 	# download cloud-foundry cli
+touch get-logs.sh 	# create the file
+echo "./cf login -a https://api.cf... -u USERNAME -p PASSWORD -o ORG -s SPACE" >> get-logs.sh		# add login command to get-logs.sh file
+echo "./cf logs $1 --recent" >> get-logs.sh		# get the recent logs for app name passed as variable
+echo "./cf logout" >> get-logs.sh
+chmod +x get-logs.sh
+```
+And final thing is execute the script from slack:
+```/marvin get-logs my-app```
+And Marvin will reply the StdOut and StdErr respectively:
+```
+stdOut:
+-----------------------------------------
+Authenticating…
+OK
+Targeted org ORG
+Targeted space SPACE
+API endpoint: https://api.cf... (API version: 2.6.0)
+User:         USERNAME
+Org:          ORG
+Space:       SPACE
 
+Recent log for app my-app...
+[WARN] 	User not registered.
+[INFO]		Responded with status code 200 (/api/user)
+...
+...
+-----------------------------------------
+stdErr:
+-----------------------------------------
+-----------------------------------------
+```
+In any case, it up to script developer to decide which part will go to stdout and which part to stderr. With this, the response format can be defined directly from the script.
+Also, input arguments to the script are passed as part of the slack command. In example above ```/marvin get-logs my-app```, ```get-logs``` is a script name and ```my-app``` is a first input parameter. 

@@ -5,6 +5,7 @@
  */
 package github.stuparm.marvin.marvinjava.controller;
 
+import github.stuparm.marvin.marvinjava.format.MarkdownFormat;
 import github.stuparm.marvin.marvinjava.model.Output;
 import github.stuparm.marvin.marvinjava.processor.ShellProcessor;
 import java.util.HashMap;
@@ -35,11 +36,13 @@ public class CommandController {
         String text = body.get("text");
         Map<String, String> map = new HashMap<>();
         
+        
         String[] commands = text.trim().split(" ");
         if (commands.length == 0) {
             map.put("text", "Ooops! Something is wrong with your command. It needs to have at least one word");
             return map;
-        }
+        }    
+        
         
         String script = commands[0].trim();
         String[] args = new String[commands.length - 1];
@@ -49,7 +52,8 @@ public class CommandController {
         
         Output output = shellProcessor.executeScript(script, args);
         
-        
+        String format = MarkdownFormat.format(output);
+        map.put("text", format);
 
         
         return map;

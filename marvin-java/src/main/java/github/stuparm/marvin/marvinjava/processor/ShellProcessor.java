@@ -5,11 +5,13 @@
  */
 package github.stuparm.marvin.marvinjava.processor;
 
+import github.stuparm.marvin.marvinjava.Config;
 import github.stuparm.marvin.marvinjava.model.Output;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -19,12 +21,15 @@ public class ShellProcessor {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ShellProcessor.class);
     
+    @Autowired
+    private Config config;
+    
     public Output executeScript(String script, String... args) {
         
         String stdOut = "";
         String stdErr = "";
         
-        String command = "./"+script+".sh";
+        String command = config.getScriptsFolder()+script+".ah";
         for (String arg : args) {
             command+= " "+arg;
         }

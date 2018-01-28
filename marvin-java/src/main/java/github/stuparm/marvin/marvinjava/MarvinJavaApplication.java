@@ -15,19 +15,9 @@ public class MarvinJavaApplication {
         SpringApplication.run(MarvinJavaApplication.class, args);
     }
 
-    @Value("${response.type}")
-    private String responseType;
-
-
-
-
     @Bean
     public ShellProcessor shellProcessor() {
         return new ShellProcessor();
-    }
-
-    public String getResponseType() {
-        return responseType;
     }
 
 }
